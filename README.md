@@ -208,6 +208,12 @@ prediction), authored synthetic distractors, episode-length effects on
   A low score there separates nothing yet.
 - **Occasional out-of-memory failures are recorded, not hidden.** Rerun the
   same command with `--gpus-per-worker 2` to retry only the failed questions.
+- **InternVL-architecture models overflow their context on full episodes.**
+  At the protocol's one frame per second, a two-minute episode tokenizes to
+  ~31k tokens against a 12,288-token window; the tokenizer warns, inference
+  proceeds, and the near-floor `action_time` scores for these models reflect
+  that reality. The frame density is not lowered per model — a context window
+  that cannot hold the input is a measured limitation, not a harness defect.
 
 ---
 
