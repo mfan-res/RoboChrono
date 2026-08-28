@@ -1,0 +1,45 @@
+{
+  "_note": [
+    "A frozen set of scenarios and dimensions. Published numbers cite a suite.",
+    "",
+    "The dataset grows over time. Without a pinned set, 'the score on RoboChrono'",
+    "would silently mean different things at different dates, and two such numbers",
+    "would look directly comparable when they are not.",
+    "",
+    "When the dataset grows, add v2.json rather than editing this file.",
+    "Dimensions are pinned too: the cost is one line, and the risk of not pinning",
+    "them is that an added dimension quietly changes what v1 meant.",
+    "",
+    "Suite and dataset are versioned separately: the suite counts published",
+    "frozen sets, the dataset counts releases of the data itself. v1 here is",
+    "the first frozen set, and it happens to be defined on dataset 2.0."
+  ],
+  "name": "RoboChrono-v1",
+  "dataset_version": "2.0",
+  "scenarios": [
+    "box_pen_tianjihand",
+    "brew_teabag_tianji",
+    "cap_pen_gim",
+    "make_tea_tianji",
+    "move_gift_tianjihand",
+    "pack_aidkit_gim",
+    "pack_aidkit_tianji",
+    "pack_airpods_tianji",
+    "pack_gift_gim",
+    "slip_tshirt_gim",
+    "stack_cubes_gim",
+    "stack_cubes_tianjihand",
+    "takeout_trash_tianji",
+    "wash_dishes_tianji",
+    "wipe_plate_gim"
+  ],
+  "dimensions": [
+    "current_action",
+    "next_action",
+    "next_action_with_goal",
+    "action_time",
+    "view_match",
+    "frame_match",
+    "frame_order"
+  ]
+}

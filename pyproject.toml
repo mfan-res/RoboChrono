@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robochrono"
+version = "0.1.0"
+description = "Temporal visual reasoning benchmark on egocentric robot manipulation video"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "torch>=2.6",
+    "decord",
+    "opencv-python",
+    "pillow",
+    "numpy",
+    "requests",
+]
+
+# transformers is deliberately absent from `dependencies`. Model families have
+# mutually exclusive requirements — some load only under 4.x, others only under
+# 5.x — so no single pin works for every model, and `pip install robochrono`
+# alone does not give a runnable setup. Install one of the extras below into
+# each environment.
+[project.optional-dependencies]
+tf4 = ["transformers==4.57.6"]
+tf5 = ["transformers==5.15.0"]
+
+[project.scripts]
+robochrono = "robochrono.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["robochrono*"]

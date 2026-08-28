@@ -1,0 +1,14 @@
+# Dataset and results are downloaded or produced, not committed.
+# Each keeps its directory and README; see the .gitignore inside them.
+__pycache__/
+*.pyc
+.venvs/
+.cache/
+*.egg-info/
+dist/
+build/
+
+# Run-time directories: weights, environments, media cache
+/models
+/.venvs
+/.cache
