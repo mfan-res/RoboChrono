@@ -9,11 +9,14 @@ description = "Temporal visual reasoning benchmark on egocentric robot manipulat
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 dependencies = [
-    "torch>=2.6",
-    "decord",
+    "torch==2.6.0",
+    "torchvision==0.21.0",
+    "accelerate==1.6.0",
+    "qwen-vl-utils==0.0.14",
+    "decord==0.6.0",
     "opencv-python",
     "pillow",
-    "numpy",
+    "numpy<2",          # decord 0.6.0 is incompatible with numpy 2.x
     "requests",
 ]
 
