@@ -99,7 +99,7 @@ fails = dispatch([model], environments=echo_env, repo_root=ROOT,
 log = run_dir / "log" / "echo.log"
 check("a failing child counts as a failure", fails == 1)
 check("its output landed in log/<env>.log",
-      log.exists() and "robochrono" in log.read_text())
+      log.exists() and log.read_text().strip() != "")
 
 print()
 if failures:

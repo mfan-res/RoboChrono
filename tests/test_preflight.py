@@ -35,7 +35,7 @@ PROTOCOL = load_protocol(ROOT / "configs/protocol.json")
 SUITE = load_suite("v1", ROOT / "configs/suites")
 ENVS = load_environments(ROOT / "configs/environments.json")
 MODELS = sorted(load_models(ROOT / "configs/models").values(), key=lambda m: m.slug)
-DATA = ROOT / "data"
+DATA = ROOT / "data" / "v20"
 
 LOCAL = MODELS[0]
 API = dataclasses.replace(

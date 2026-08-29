@@ -41,8 +41,12 @@ suites = {p.stem: json.loads(p.read_text(encoding="utf-8"))
 models = {p.stem: json.loads(p.read_text(encoding="utf-8"))
           for p in sorted((ROOT / "configs/models").rglob("*.json"))}
 
-manifest_path = ROOT / "data/manifest.json"
-manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else None
+# One data root per dataset version: data/v20 holds 2.0, data/v21 holds 2.1.
+manifests = {}
+for root in sorted((ROOT / "data").glob("v*/manifest.json")):
+    m = json.loads(root.read_text(encoding="utf-8"))
+    manifests[m["version"]] = m
+manifest = manifests.get("2.0")   # sections 4-5 sanity-check against the primary
 
 print("1. model -> environment")
 env_names = set(environments["envs"])
@@ -92,13 +96,15 @@ if manifest is None:
     check("manifest present", False, "data/manifest.json not found")
 else:
     for sname, s in suites.items():
-        unknown_sc = set(s["scenarios"]) - set(manifest["scenarios"])
-        unknown_dim = set(s["dimensions"]) - set(manifest["dimensions"])
+        m = manifests.get(s["dataset_version"])
+        if m is None:
+            check(f"{sname} dataset present", False,
+                  f"no data root holds version {s['dataset_version']}")
+            continue
+        unknown_sc = set(s["scenarios"]) - set(m["scenarios"])
+        unknown_dim = set(s["dimensions"]) - set(m["dimensions"])
         check(f"{sname} scenarios exist", not unknown_sc, f"unknown: {sorted(unknown_sc)}")
         check(f"{sname} dimensions exist", not unknown_dim, f"unknown: {sorted(unknown_dim)}")
-        check(f"{sname} dataset_version matches",
-              s["dataset_version"] == manifest["version"],
-              f"{s['dataset_version']} vs {manifest['version']}")
 
 print("4. frame sampling covers every dimension")
 if manifest is not None:

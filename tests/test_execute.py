@@ -37,7 +37,7 @@ def check(name: str, passed: bool, detail: str = "") -> None:
         failures.append(name)
 
 
-DATA = ROOT / "data"
+DATA = ROOT / "data" / "v20"
 if not (DATA / "manifest.json").exists():
     print("skip: dataset not present")
     sys.exit(0)

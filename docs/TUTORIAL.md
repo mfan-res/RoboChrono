@@ -59,14 +59,19 @@ either by hand.
 
 ### 1.3 Download the dataset
 
+Each dataset release lives in its own root: `data/v20` for the 15-scenario
+release, `data/v21` for the 10-scenario one. Download the release you were
+assigned (the example below fetches 2.0):
+
 ```bash
 hf auth login          # paste your token once
 hf download GIM-RoboLab/robochrono --repo-type dataset --local-dir /tmp/robochrono-dl
-for t in /tmp/robochrono-dl/vqa_2/*.tar; do tar -xf "$t" -C data/; done
-cp /tmp/robochrono-dl/vqa_2/manifest.json /tmp/robochrono-dl/vqa_2/README.md data/
-cp -r /tmp/robochrono-dl/vqa_2/qa data/
+mkdir -p data/v20
+for t in /tmp/robochrono-dl/vqa_2/*.tar; do tar -xf "$t" -C data/v20; done
+cp /tmp/robochrono-dl/vqa_2/manifest.json data/v20/
+cp -r /tmp/robochrono-dl/vqa_2/qa data/v20/
 
-.venvs/tf4/bin/python -m robochrono validate-data
+.venvs/tf4/bin/python -m robochrono validate-data --data-root data/v20
 ```
 
 The last command must end with `all checks passed` — 13,636 questions,
@@ -129,7 +134,7 @@ with a `report.md` line, and the summary inside shows `errors: 0`.
 ```bash
 nohup python3 -m robochrono eval \
   --models rynnbrain1-1-122b-a10b internvl3-2b \
-  --gpus 4 > full_run.log 2>&1 &
+  --data-root data/v20 --gpus 4 > full_run.log 2>&1 &
 ```
 
 Notes on what happens:
@@ -157,6 +162,11 @@ What the lines mean:
   emergency (see below).
 - `ABORTED — circuit breaker` — twenty consecutive failures; something is
   systematically wrong. Read the nearest `error:` lines and get in touch.
+
+**Do not `git pull` between launching a run and finishing it.** Resuming
+finds the run by a fingerprint that includes the code version; updating the
+code mid-run means a rerun would start a fresh directory instead of
+continuing. Update the repository after your run completes and is packed.
 
 **If the machine reboots or you kill the run**: run the exact same command
 again. It finds its directory by configuration fingerprint and continues

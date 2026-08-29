@@ -55,7 +55,11 @@ def prepare_run(
 
     generation = {m.slug: adapters.build(m, protocol).generation_settings()
                   for m in models}
+    import sys
     runid.write_run_record(run_dir, {
+        # The exact command line, so a run produced on any machine by any
+        # operator carries what was actually asked of it — limits included.
+        "invocation": list(sys.argv),
         "dataset": {"version": manifest.version, "fingerprint": manifest.fingerprint},
         "protocol": {"version": protocol.version},
         "suite": suite_name,

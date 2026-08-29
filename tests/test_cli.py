@@ -55,7 +55,7 @@ for command in ("preflight", "validate-data", "eval", "report", "pack"):
     check(f"{command} --help", cli(command, "--help").returncode == 0)
 
 print("2. validate-data")
-result = cli("validate-data")
+result = cli("validate-data", "--data-root", "data/v20")
 check("real dataset passes", result.returncode == 0, result.stdout[-200:].strip())
 check("headline numbers reported", "13636" in result.stdout)
 broken = Path(tempfile.mkdtemp())
@@ -84,7 +84,7 @@ table_path.write_text(json.dumps(table))
 }))
 
 results_root = work / "results"
-eval_args = ("eval", "--models-dir", str(work / "models"),
+eval_args = ("eval", "--data-root", "data/v20", "--models-dir", str(work / "models"),
              "--results-root", str(results_root),
              "--scenarios", scenario, "--dimensions", *dims, "--no-dispatch")
 result = cli(*eval_args)
@@ -122,7 +122,7 @@ check("bundle is small and beside the runs", bundle.exists()
 
 print("6. dry run prices the work and touches nothing")
 dry_root = work / "dry-results"
-result = cli("eval", "--models-dir", str(work / "models"),
+result = cli("eval", "--data-root", "data/v20", "--models-dir", str(work / "models"),
              "--results-root", str(dry_root),
              "--scenarios", scenario, "--dimensions", *dims, "--dry-run")
 check("dry run exits cleanly", result.returncode == 0, result.stderr[-200:])
@@ -131,7 +131,7 @@ check("counts reported", "2 (model × scenario × dimension)" in result.stdout
 check("nothing written", not dry_root.exists())
 
 print("7. preflight verdicts through the CLI")
-result = cli("preflight", "--models-dir", str(work / "models"),
+result = cli("preflight", "--data-root", "data/v20", "--models-dir", str(work / "models"),
              "--scenarios", scenario, "--dimensions", *dims)
 check("missing weights fail preflight", result.returncode == 1
       and "replay-2b weights" in result.stdout and "FAIL" in result.stdout)

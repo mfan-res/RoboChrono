@@ -121,6 +121,10 @@ def to_markdown(report: Report) -> str:
                 row = index.get((model, dimension))
                 if row is None:
                     cells.append("—")
+                elif not row.get("total"):
+                    # The dataset asked nothing here (a partial scenario);
+                    # 0.00 would read as a score, and it is not one.
+                    cells.append("n/a")
                 elif row.get("value") is None:
                     cells.append("n/a")
                 else:

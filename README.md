@@ -67,13 +67,21 @@ uv sync --extra tf5
 
 ### 2. Data
 
+Each dataset release lives in its own root — `data/v20` (the fifteen
+scenarios of 2.0), `data/v21` (the ten of 2.1) — and every command names the
+root it works on with `--data-root`. A suite pins the dataset version it
+belongs to, and a mismatched root fails loudly rather than silently mixing.
+
 ```bash
 hf download GIM-RoboLab/robochrono --repo-type dataset --local-dir /tmp/robochrono-dl
-for t in /tmp/robochrono-dl/vqa_2/*.tar; do tar -xf "$t" -C data/; done
-cp /tmp/robochrono-dl/vqa_2/manifest.json /tmp/robochrono-dl/vqa_2/README.md data/
-cp -r /tmp/robochrono-dl/vqa_2/qa data/
+mkdir -p data/v20 data/v21
+for t in /tmp/robochrono-dl/vqa_2/*.tar;       do tar -xf "$t" -C data/v20; done
+for t in /tmp/robochrono-dl/vqa_10_task/*.tar; do tar -xf "$t" -C data/v21; done
+cp /tmp/robochrono-dl/vqa_2/manifest.json data/v20/ && cp -r /tmp/robochrono-dl/vqa_2/qa data/v20/
+cp /tmp/robochrono-dl/vqa_10_task/manifest.json data/v21/ && cp -r /tmp/robochrono-dl/vqa_10_task/qa data/v21/
 
-robochrono validate-data     # check immediately after downloading
+robochrono validate-data --data-root data/v20   # check immediately after downloading
+robochrono validate-data --data-root data/v21
 ```
 
 The dataset repository is private during review; ask for access.
@@ -95,8 +103,8 @@ Skip it if you are not running that dimension.
 ### 3. Run
 
 ```bash
-robochrono eval --suite v1
-robochrono eval --suite v1 --dry-run    # what would run, and how much it costs
+robochrono eval --suite v1 --data-root data/v20
+robochrono eval --suite v1 --data-root data/v20 --dry-run   # what would run, and its cost
 ```
 
 Environment switching is automatic — each model is dispatched to the interpreter

@@ -24,7 +24,7 @@ def check(name: str, passed: bool, detail: str = "") -> None:
 
 MODELS = sorted(load_models(ROOT / "configs/models").values(), key=lambda m: m.slug)
 SUITE = load_suite("v1", ROOT / "configs/suites")
-DATA = ROOT / "data"
+DATA = ROOT / "data" / "v20"
 
 print("1. the suite expands densely")
 selected, skipped = expand(MODELS, SUITE, DATA)

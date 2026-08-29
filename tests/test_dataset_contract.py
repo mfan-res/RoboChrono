@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 
 from robochrono.dataset.validate import format_report, validate_dataset  # noqa: E402
 
-DATA = ROOT / "data"
+DATA = ROOT / "data" / "v20"
 failures: list[str] = []
 
 
