@@ -69,8 +69,17 @@ uv sync --extra tf5
 
 Each dataset release lives in its own root — `data/v20` (the fifteen
 scenarios of 2.0), `data/v21` (the ten of 2.1) — and every command names the
-root it works on with `--data-root`. A suite pins the dataset version it
-belongs to, and a mismatched root fails loudly rather than silently mixing.
+root it works on with `--data-root`. The root name is the dataset version
+with the dot dropped (dots in directory names invite tooling trouble); the
+scheme assumes single-digit minor versions. A suite pins the dataset version
+it belongs to, and a mismatched root fails loudly rather than silently mixing.
+
+Suites and dataset versions are separate axes on purpose. A dataset version
+says which questions exist; a suite (`configs/suites/*.json`) is a frozen
+scenario-and-dimension set that published scores cite. Published suites are
+never edited — a new dataset release gets a new suite file, and several
+suites may draw on the same release. Scores are comparable exactly when they
+share a suite and a dataset fingerprint; `robochrono report` enforces this.
 
 ```bash
 hf download GIM-RoboLab/robochrono --repo-type dataset --local-dir /tmp/robochrono-dl

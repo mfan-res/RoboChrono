@@ -65,6 +65,8 @@ assigned (the example below fetches 2.0):
 
 ```bash
 hf auth login          # paste your token once
+# Data roots are named after the dataset version with the dot dropped:
+# dataset 2.0 lives in data/v20, dataset 2.1 in data/v21.
 hf download GIM-RoboLab/robochrono --repo-type dataset --local-dir /tmp/robochrono-dl
 mkdir -p data/v20
 for t in /tmp/robochrono-dl/vqa_2/*.tar; do tar -xf "$t" -C data/v20; done
