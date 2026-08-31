@@ -1,0 +1,36 @@
+{
+  "_note": [
+    "The third frozen set: the eight scenarios of dataset 2.2. Earlier suites",
+    "are unchanged; published numbers cite whichever suite they were computed",
+    "on.",
+    "",
+    "Coverage is 55 of 56 combinations: pack_gift_hand is a single-camera",
+    "embodiment, so view_match has no questions there; the empty dimension is",
+    "kept and reported as n/a rather than dropped.",
+    "",
+    "pack_gift_gim supersedes its dataset-2.0 form: the scenario was",
+    "regenerated whole with 50 episodes (the original 25 plus 25 new ones),",
+    "so its scores under this suite are not comparable with suite v1."
+  ],
+  "name": "RoboChrono-v3",
+  "dataset_version": "2.2",
+  "scenarios": [
+    "bag_toy_gim",
+    "box_shoes_gim",
+    "make_tea_gim",
+    "move_flower_tianjihand",
+    "pack_gift_gim",
+    "pack_gift_hand",
+    "stack_cubes_tianji",
+    "wipe_plate_tianji"
+  ],
+  "dimensions": [
+    "current_action",
+    "next_action",
+    "next_action_with_goal",
+    "action_time",
+    "view_match",
+    "frame_match",
+    "frame_order"
+  ]
+}

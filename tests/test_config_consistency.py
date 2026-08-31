@@ -139,10 +139,13 @@ print("8. scenario and dimension names are current everywhere")
 # 2.0 renamed when scenarios recorded on other embodiments joined.
 # `understanding`, `time` and `planning` were also working names, but they are
 # ordinary English words and would match prose, so they are not scanned for.
+# `stack_cubes_tianji` left this list with dataset 2.2: the 1.0 name was
+# retired as mislabeled, and 2.2 re-issued it for the genuine tianji
+# recording (QAGen's canonical mapping: raw `stack_cubes` -> this name).
 superseded = {
     "airpods", "gift_inhand", "pen_inbox", "stack_cubes", "tea", "wash",
     "planning_2", "left_right", "image_in_video", "step_order",
-    "hand_gift_tianji", "box_pen_tianji", "stack_cubes_tianji",
+    "hand_gift_tianji", "box_pen_tianji",
 }
 pattern = re.compile(r"\b(" + "|".join(sorted(superseded)) + r")\b")
 # This file is the one place the superseded names may appear: the list above.
