@@ -142,8 +142,10 @@ def to_markdown(report: Report) -> str:
     if empty:
         out.append("")
         out.append(f"{empty} cell(s) read `n/a`: the dataset asks no questions "
-                   "there — a partial scenario whose quality guards produced "
-                   "none — so there was nothing to run. Not a gap in coverage.")
+                   "there — a dimension can be empty for a scenario (a single "
+                   "camera rules out `view_match`; too few segments per episode "
+                   "starve the others) — so there was nothing to run. Not a "
+                   "gap in coverage.")
 
     # Faults come first: they say "that cell is not a score", and a reader has
     # to know which cells not to compare before comparing any.
