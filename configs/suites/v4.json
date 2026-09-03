@@ -1,0 +1,37 @@
+{
+  "_note": [
+    "The fourth frozen set: the ten scenarios of dataset 2.3. Earlier suites are",
+    "unchanged; published numbers cite whichever suite they were computed on.",
+    "",
+    "Coverage is 70 of 70 combinations — every scenario asks every dimension.",
+    "",
+    "Three scenarios supersede their dataset-2.0 form and their scores under this",
+    "suite are not comparable with suite v1: slip_tshirt_gim and",
+    "takeout_trash_tianji were regenerated after a bad recording was dropped (49",
+    "to 48 and 40 to 39 episodes), and wipe_plate_gim was regenerated after one",
+    "episode's annotation was corrected."
+  ],
+  "name": "RoboChrono-v4",
+  "dataset_version": "2.3",
+  "scenarios": [
+    "brew_teabag_gim",
+    "pack_airpods_gim",
+    "slip_tshirt_gim",
+    "sort_cubes_gim",
+    "takeout_trash_tianji",
+    "tidy_stationery_gim",
+    "wash_dishes_gim",
+    "wipe_plate_gim",
+    "zip_pouch_gim",
+    "zip_pouch_tianji"
+  ],
+  "dimensions": [
+    "current_action",
+    "next_action",
+    "next_action_with_goal",
+    "action_time",
+    "view_match",
+    "frame_match",
+    "frame_order"
+  ]
+}
