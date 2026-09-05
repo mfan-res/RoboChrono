@@ -50,7 +50,9 @@ def main() -> int:
     suite = load_suite(args.suite or record.get("suite"), "configs/suites")
     models = record.get("models") or []
     invocation = record.get("invocation")
-    print(f"run       {record.get('run_id')}  (code {record.get('code', {}).get('git')})")
+    label = record.get("label")
+    print(f"run       {record.get('run_id')}  (code {record.get('code', {}).get('git')})"
+          + (f"  [{label}]" if label else ""))
     print(f"models    {', '.join(models)}")
     print(f"invocation {' '.join(invocation) if invocation else '(not recorded — pre-audit-era run)'}")
 

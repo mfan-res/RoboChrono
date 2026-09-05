@@ -39,7 +39,41 @@ def check(name: str, passed: bool, detail: str = "") -> None:
         failures.append(name)
 
 
+def check_card_selection() -> None:
+    """Which cards a run is given — a count, or the exact ones named.
+
+    Naming cards matters on a shared machine, where the free ones are rarely
+    the first ones. `CUDA_VISIBLE_DEVICES` cannot serve here: workers set it
+    from these indices before importing torch, so an inherited value is
+    overwritten and the run lands on the wrong cards without saying so.
+    """
+    from robochrono.orchestrate.pool import visible_gpus
+    try:
+        import torch
+        if not torch.cuda.is_available() or torch.cuda.device_count() < 2:
+            print("  (no multi-GPU machine; card selection not exercised)")
+            return
+        count = torch.cuda.device_count()
+    except ImportError:
+        print("  (torch absent; card selection not exercised)")
+        return
+
+    check("no argument takes every card", visible_gpus(None) == list(range(count)))
+    check("a count takes the first N", visible_gpus(2) == [0, 1])
+    check("a count as a string means the same", visible_gpus("2") == [0, 1])
+    last = count - 1
+    check("a list takes exactly those cards", visible_gpus(f"1,{last}") == [1, last])
+    try:
+        visible_gpus(f"1,{count}")
+        check("a card this machine lacks is refused", False, "no error raised")
+    except ValueError as exc:
+        check("a card this machine lacks is refused", str(count) in str(exc))
+
+
 def main() -> None:
+    print("0. card selection")
+    check_card_selection()
+
     DATA = ROOT / "data" / "v20"
     if not (DATA / "manifest.json").exists():
         print("skip: dataset not present")

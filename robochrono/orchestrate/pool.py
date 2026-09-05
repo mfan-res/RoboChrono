@@ -250,7 +250,17 @@ def _stop_workers(procs: list[Any]) -> None:
             proc.kill()
 
 
-def visible_gpus(requested: int | None = None) -> list[int]:
+def visible_gpus(requested: str | int | None = None) -> list[int]:
+    """Which cards to run on: a count, an explicit list, or everything.
+
+    ``4`` means the first four. ``"2,5"`` means those two and no others — for
+    sharing a machine, where the first N are the wrong N.
+
+    Note that ``CUDA_VISIBLE_DEVICES`` is not the way to do this here: workers
+    set it themselves from these indices before importing torch, so a value
+    inherited from the environment is overwritten rather than honoured. It
+    would look like it worked and quietly run on the wrong cards.
+    """
     try:
         import torch
     except ImportError:
@@ -258,7 +268,17 @@ def visible_gpus(requested: int | None = None) -> list[int]:
     if not torch.cuda.is_available():
         return []
     count = torch.cuda.device_count()
-    return list(range(count if requested is None else min(requested, count)))
+    if requested is None:
+        return list(range(count))
+    if isinstance(requested, str) and "," in requested:
+        picked = [int(part) for part in requested.split(",") if part.strip()]
+        outside = [i for i in picked if not 0 <= i < count]
+        if outside:
+            raise ValueError(
+                f"--gpus names card(s) {outside} but this machine has {count} "
+                f"(0-{count - 1})")
+        return picked
+    return list(range(min(int(requested), count)))
 
 
 # --------------------------------------------------------------------------

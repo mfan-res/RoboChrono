@@ -43,6 +43,7 @@ def prepare_run(
     environments: dict[str, Any] | None = None,
     repo_root: Any = ".",
     fresh: bool = False,
+    label: str | None = None,
 ) -> runid.RunDir:
     """Establish the run's identity and write its configuration snapshot."""
     manifest = load_manifest(data_root)
@@ -63,6 +64,10 @@ def prepare_run(
         "dataset": {"version": manifest.version, "fingerprint": manifest.fingerprint},
         "protocol": {"version": protocol.version},
         "suite": suite_name,
+        # Whose run this is, in words. Deliberately outside the fingerprint:
+        # a label describes an operator's intent, and two machines running the
+        # same experiment must stay the same experiment however they label it.
+        **({"label": label} if label else {}),
         "models": sorted(m.slug for m in models),
         "generation_by_model": generation,
         "code": {k: code[k] for k in ("git", "dirty")},

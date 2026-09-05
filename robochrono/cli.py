@@ -66,10 +66,14 @@ def build_parser() -> argparse.ArgumentParser:
                      help="rerun completed questions (existing rows go to .bak)")
     run.add_argument("--limit-items", type=int, default=None)
     run.add_argument("--limit-groups", type=int, default=None)
-    run.add_argument("--gpus", type=int, default=None,
-                     help="use the first N cards; default: all visible")
+    run.add_argument("--gpus", default=None,
+                     help="N for the first N cards, or a list like 2,5 for "
+                          "those cards; default: all visible")
     run.add_argument("--gpus-per-worker", type=int, default=None)
     run.add_argument("--api-concurrency", type=int, default=None)
+    run.add_argument("--label", default=None,
+                     help="a name for this run, recorded in run.json; does not "
+                          "affect the run's identity")
     run.add_argument("--run-dir", default=None,
                      help="(internal) execute inside this run directory")
     run.add_argument("--no-dispatch", action="store_true",
@@ -287,7 +291,7 @@ def cmd_eval(args) -> int:
         suite_name=args.suite, models=models, model_paths=model_paths,
         protocol=protocol, data_root=args.data_root,
         environments={name: env.transformers for name, env in environments.items()},
-        repo_root=".", fresh=args.fresh)
+        repo_root=".", fresh=args.fresh, label=args.label)
     print(f"run {run.run_id}" + (" (resuming)" if run.resumed else " (new)"))
 
     if args.no_dispatch:
@@ -310,7 +314,8 @@ def cmd_eval(args) -> int:
                             ("--limit-groups", args.limit_groups),
                             ("--gpus", args.gpus),
                             ("--gpus-per-worker", args.gpus_per_worker),
-                            ("--api-concurrency", args.api_concurrency)):
+                            ("--api-concurrency", args.api_concurrency),
+                            ("--label", args.label)):
             if value is not None:
                 passthrough += [flag, str(value)]
         if args.overwrite:
