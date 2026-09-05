@@ -86,7 +86,14 @@ def parse_interval_row(row: Any) -> tuple[float, float]:
             return parse_time_value(str(row["start_time"])), parse_time_value(str(row["end_time"]))
         for key in ("answer", "interval", "timestamp"):
             if key in row:
-                return parse_interval_text(str(row[key]))
+                value = row[key]
+                # The field may hold the interval as an object rather than a
+                # string ({"answer": {"start": 1.2, "end": 3.4}}). Stringifying
+                # that yields a Python repr the interval pattern cannot match,
+                # so the answer would be lost although it is stated exactly.
+                if isinstance(value, dict):
+                    return parse_interval_row(value)
+                return parse_interval_text(str(value))
     if isinstance(row, str):
         return parse_interval_text(row)
     raise ValueError(f"Cannot parse interval row: {row!r}")
@@ -196,9 +203,20 @@ def parse_multi_interval_text(text: str, question_ids: list[str]) -> dict[str, d
                 item_id = question_ids[pos] if 0 <= pos < len(question_ids) else None
             if item_id not in question_ids:
                 continue
-            start, end = parse_interval_row(row)
+            try:
+                start, end = parse_interval_row(row)
+            except ValueError:
+                # One unreadable row must not discard the rest of the response,
+                # nor the tiers below.
+                continue
             predictions[item_id] = {"pred_start": start, "pred_end": end, "model_answer": row}
-        return predictions
+        # Only return here if something matched. Valid JSON that answers none of
+        # the asked questions — a model numbering its single answer `index: 10`,
+        # say — otherwise ends the parse with an empty result, and the prose tier
+        # that exists precisely for that case never runs. The tiers are meant to
+        # be monotonic: each one only ever adds.
+        if predictions:
+            return predictions
     except json.JSONDecodeError:
         pass
 
@@ -220,7 +238,13 @@ def parse_multi_interval_text(text: str, question_ids: list[str]) -> dict[str, d
                         item_id = question_ids[key]
                     else:
                         continue
-                start, end = parse_interval_row(row)
+                try:
+                    start, end = parse_interval_row(row)
+                except ValueError:
+                    # Same rule as tier 1: skip the row, keep the tier, and
+                    # leave the prose tier reachable. A malformed time value
+                    # inside otherwise-fine JSON used to abort the whole parse.
+                    continue
                 found[item_id] = {"pred_start": start, "pred_end": end,
                                   "model_answer": row}
             if found:

@@ -165,13 +165,16 @@ def extract_choice(text: str, options: dict[str, str], keep_hyphen: bool = False
 
 def _choice_from_payload(data: dict[str, Any], options: dict[str, str],
                          keep_hyphen: bool) -> str | None:
-    text = ""
     for key in _CHOICE_KEYS:
         value = data.get(key)
         if value:
-            text = str(value)
-            break
-    return extract_choice(text, options, keep_hyphen)
+            return extract_choice(str(value), options, keep_hyphen)
+    # None of the expected keys is present, so fall back to the whole object.
+    # A model may state its answer under a name of its own — `{"label": "Zip
+    # the pouch."}` — and the option text is matched anyway. Reading only the
+    # keys we thought of scores a correct answer as unparseable, which measures
+    # our key list rather than the model.
+    return extract_choice(json.dumps(data, ensure_ascii=False), options, keep_hyphen)
 
 
 def _parse_choice_baseline(text: str, options: dict[str, str],

@@ -80,11 +80,18 @@ EXPECTED_GENERATION = {
     "internvl3-2b":                  (0.0, 4096, "disabled"),
     "qwen3-vl-235b-a22b-instruct":   (0.0, 4096, "disabled"),
     "rynnbrain1-1-122b-a10b":        (0.0, 4096, "disabled"),
+    # Reasons under a budget it never approaches: the longest output
+    # measured across 38k questions stays under a third of the baseline,
+    # so unlike the other always-on model it needs no raised ceiling.
+    "mimo-vl-7b-rl":                 (0.0, 4096, "always_on"),
     "qwen3-8-max":                   (0.0, 4096, "disabled"),
     "qwen3-8-max-thinking":          (0.0, 4096, "enabled"),
     "gemini-3-6-flash":              (0.0, 4096, "disabled"),
     "doubao-seed-2-0-lite":          (0.0, 4096, "disabled"),
     "qwen3-vl-235b-a22b-api":        (0.0, 4096, "disabled"),
+    # Reports thoughtsTokenCount on every call and offers no switch, so the
+    # thinking state is what it does rather than what we asked for.
+    "gemini-robotics-er-2":          (0.0, 4096, "always_on"),
 }
 for name, model in sorted(MODELS.items()):
     a = adapters.build(model, PROTOCOL)

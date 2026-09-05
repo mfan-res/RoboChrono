@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from robochrono.dimensions.base import CallContext, Unit  # noqa: E402
-from robochrono.dimensions.time_eqa import build, parse_time_value  # noqa: E402
+from robochrono.dimensions.time_eqa import (  # noqa: E402
+    build, parse_multi_interval_text, parse_time_value)
 
 failures: list[str] = []
 
@@ -75,6 +76,38 @@ check("parse failure rate covers the unreadable",
       abs(summary["parse_failure_rate"] - 2 / 3) < 1e-9)
 check("zero rows stay in the tIoU denominator",
       abs(summary["mean_tIoU"] - 1 / 3) < 1e-9)
+
+print("5. an interval the model did state is not thrown away")
+# Each case below is a real response that scored zero because the parser
+# stopped early, not because the model failed to answer. The interval is
+# present and unambiguous in every one of them.
+QID = ["scenario/file-000/s00@action_time"]
+
+
+def interval(text):
+    """The interval the parser recovers, or None when it recovers nothing.
+
+    A response it cannot read raises, and the caller turns that into a
+    zero-scored row — so None here means exactly "would be marked unparsed".
+    """
+    try:
+        got = parse_multi_interval_text(text, QID).get(QID[0])
+    except ValueError:
+        return None
+    return None if got is None else (got["pred_start"], got["pred_end"])
+
+
+check("an answer field holding an object, not a string",
+      interval('{"answers":[{"index":1,"answer":{"start":0.01,"end":0.06}}]}') == (0.01, 0.06))
+check("valid JSON numbering its only answer out of range still reaches the prose tier",
+      interval('{"answers":[{"index":10,"start":"35.0","end":"40.0",'
+               '"answer":"00:35.0-00:40.0"}]}') == (35.0, 40.0))
+check("one unreadable row does not discard the rest of the response",
+      interval('```json\n[\n{"answers": [\n{"index": 1, "start":":00:05", '
+               '"end":":00:08", "answer": "00:00:05.000-00:00:08.000"}\n}\n]\n```')
+      == (5.0, 8.0))
+check("a model that declines is still unparsed — nothing is invented",
+      interval('{"answers":[{"index":1,"start":null,"end":null,"answer":null}]}') is None)
 
 print()
 if failures:
